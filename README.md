@@ -5,7 +5,8 @@ This repository contains the implementation and results of a comparative study b
 
 ## Datasets 
 ### Rio do Fogo 
-This custom dataset comprises 1,549 images collected and annotated by the Marine Ecology Laboratory/UFRN at Rio do Fogo, Northeast Brazil. Between 2017 and 2022, 100 images were collected from each of two sites every three months. Each image contains 25 random annotated points, resulting in 38,725 annotations across 54 distinct labels, which are highly imbalanced. Specifically, 11 labels account for 95% of the annotations, while 24 classes have fewer than 20 annotations each. The images can be downloaded from the provided link.
+This custom dataset comprises 1,549 images collected and annotated by the Marine Ecology Laboratory/UFRN at Rio do Fogo, Northeast Brazil. Between 2017 and 2022, 100 images were collected from each of two sites every three months. Each image contains 25 random annotated points, resulting in 38,725 annotations across 54 distinct labels, which are highly imbalanced. Specifically, 11 labels account for 95% of the annotations, while 24 classes have fewer than 20 annotations each. 
+The images are available upon request at celia.blondin@ird.fr
 
 ### Moorea Labeled Corals (MLC) 
 The Moorea Labeled Corals dataset is a subset of the Moorea Coral Reef-Long Term Ecological Research (MCR-LTER) dataset packaged for Computer Vision research. It contains over 400.000 human expert annotations on 2055 coral reef survey images from the island of Moorea in French Polynesia. Each image has 200 expert random point annotations, indicating the substrate underneath each point. Introduced by [Beijbom et al in CVPR 2012](https://www.researchgate.net/publication/261494296_Automated_Annotation_of_Coral_Reef_Survey_Images). 
@@ -36,7 +37,7 @@ Our baseline is a standard Multi-Layer Perceptron (MLP) classifier provided by t
 The hierarchical classifier is implemented using `hiclass` ([hiclass](https://github.com/scikit-learn-contrib/hiclass.git)), which also depends on scikit-learn classifiers. We opted for a Local Classifier per Parent Node, meaning a separate classifier for each node with children. Each of these classifiers is an MLP identical to our baseline, with two layers of 200 and 100 units.
 
 ## Metrics
-The metrics used to compare the two approaches are the F1-score and a hierarchical score. The F1-score is computed using scikit-learn, while the hierarchical score is computed using `hiclass`. The hierarchical score penalizes errors less when elements are close in the hierarchical tree.
+The metrics used to compare the two approaches are the F1-score and a hierarchical score. The F1-score is computed using scikit-learn, while the hierarchical score is computed using `hiclass`. The hierarchical score penalizes errors less when elements are close in the hierarchical tree. You can read more about the metrics [here](https://hiclass.readthedocs.io/en/latest/algorithms/metrics.html).
 
 ## Setup 
 To install all the package dependency : 
