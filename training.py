@@ -104,7 +104,6 @@ def main_train(folder_path, flat_classifiers, hierarchical_classifiers, list_nb_
 
     if dataset == 'MLC':
         x_train, x_test, y_train, y_test = load_representative_data_mlc(folder_path)
-        print(len(x_train), len(x_test))
     elif dataset == 'RIO':
         # x_train, x_test, y_train, y_test = load_data(folder_path)
         x_train, x_test, y_train, y_test = load_representative_data(folder_path)
@@ -215,8 +214,8 @@ def main_train(folder_path, flat_classifiers, hierarchical_classifiers, list_nb_
 
                 print(f'Finish processing {classifier_name}')
 
-        print(flat_run_reports)
-        print(flat_hi_run_reports)
+        #print(flat_run_reports)
+        #print(flat_hi_run_reports)
         average_label_counts = {label: np.mean(counts) for label, counts in label_counts.items()}
         plot_avg_distrib(average_label_counts)
         # Compute mean and standard deviation for flat classifiers
@@ -234,11 +233,11 @@ def main_train(folder_path, flat_classifiers, hierarchical_classifiers, list_nb_
 
     #print(hi_intermediate_reports)
     #print(flat_intermediate_reports)
-    print('Final dict ', flat_reports)
-    print('Final dict ', flat_hi_reports)
-    print('Final dict ', hi_flat_reports)
-    print('Final dict ', hi_reports)
-    print('Intermediate dict ', flat_intermediate_reports)
+    #print('Final dict ', flat_reports)
+    #print('Final dict ', flat_hi_reports)
+    #print('Final dict ', hi_flat_reports)
+    #print('Final dict ', hi_reports)
+    #print('Intermediate dict ', flat_intermediate_reports)
 
 
     save_pickle(flat_reports, result_file + '/flat_reports.pkl')

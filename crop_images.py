@@ -3,6 +3,7 @@ import torchvision.transforms as transforms
 from PIL import Image, ImageOps, ImageDraw, ImageFont, ImageFile
 from torch import Tensor
 from data_classes import Point, Batch, Patch
+import pandas as pd
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 def crop_patches(im, rowcols, crop_size: int):
@@ -98,3 +99,5 @@ def crop_images_in_patches(image_name: str, batch: Batch, crop_size: int, path_i
     #print("PATCHES TENSOR SHAPE: ", patches_tensor.shape)
     #(25,3,224,224)
     return patches_tensor, patch_labels_list
+
+
