@@ -21,6 +21,7 @@ The data set is comprised of 22 dive missions conducted by AUV Sirius off the So
 
 ## Hierarchy 
 ### Rio do Fogo 
+![hierarchy_graph](https://github.com/user-attachments/assets/42d34094-1edd-4570-8d2b-e2068f1da4f6)
 
 ### MLC
 
