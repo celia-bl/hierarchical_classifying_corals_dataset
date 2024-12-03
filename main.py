@@ -3,6 +3,7 @@ import yaml
 import os
 from training import main_train, MLPClassifier
 from extract_features import extract_all_features
+from visualize_data import visualize_data
 import warnings
 
 
@@ -79,6 +80,20 @@ def train_model_from_config(config_path):
     )
     pass
 
+def visualize_data_from_config(config_path):
+    with open(config_path, 'r') as f:
+        config = yaml.safe_load(f)
+
+    dataset_name = config.get('dataset')
+    image_path = config.get('image_path')
+    annotations_file = config.get('annotations_file')
+    crop_size = config.get('crop_size')
+    model_name = config.get('model_extraction_name')
+    weights_file = config.get('weights_file')
+
+    print(f"Visualing data for dataset: {dataset_name} from {image_path}")
+    visualize_data(config_path)
+    pass
 
 def get_config_path(cli_path):
     """Find the path of config file"""
@@ -105,6 +120,10 @@ def main():
     parser_train = subparsers.add_parser('train', help='Train a model using extracted features.')
     parser_train.add_argument('config_path', nargs='?', type=str, help='Path to the YAML configuration file.')
 
+    # Visualize Command
+    parser_train = subparsers.add_parser('visualize', help='Visualize the dataset')
+    parser_train.add_argument('config_path', nargs='?', type=str, help='Path to the YAML configuration file.')
+
     args = parser.parse_args()
 
     try:
@@ -114,6 +133,8 @@ def main():
             extract_features_from_config(config_path)
         elif args.command == 'train':
             train_model_from_config(config_path)
+        elif args.command == 'visualize':
+            visualize_data_from_config(config_path)
         else:
             parser.print_help()
     except FileNotFoundError as e:

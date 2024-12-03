@@ -1,6 +1,6 @@
 # Dataset configuration
 # Available options: RIO, MLC, TasCPC
-dataset: "RIO"
+dataset: "MLC"
 
 # Crop size for patches, strictly limited to 224 for efficientnet-b0
 crop_size: 224

@@ -5,38 +5,111 @@ import random
 from collections import Counter
 from sklearn.model_selection import train_test_split
 
-def get_features(folder_path, nb_image, seed=None):
+def get_features(folder_path, nb_image=None, seed=None):
+    """
+    Charge les features et labels depuis un nombre spécifié de fichiers .pt
+    dans un dossier (et ses sous-dossiers). Si nb_image n'est pas spécifié,
+    utilise tous les fichiers.
+
+    Args:
+        folder_path (str): Chemin du dossier contenant les fichiers .pt.
+        nb_image (int, optional): Nombre de fichiers à utiliser. Si None, prend tous les fichiers.
+        seed (int, optional): Valeur pour initialiser le générateur aléatoire, pour reproductibilité.
+
+    Returns:
+        tuple: (features, labels) où features est un tableau numpy et labels une liste.
+    """
     if seed is not None:
         random.seed(seed)
         np.random.seed(seed)
 
     all_files = []
 
-    # Parcours récursif des dossiers et sous-dossiers
-    for root, dirs, files in os.walk(folder_path):
+    # Parcours récursif des dossiers et sous-dossiers pour trouver les fichiers .pt
+    for root, _, files in os.walk(folder_path):
         for file in files:
             if file.endswith('.pt'):
                 all_files.append(os.path.join(root, file))
 
+    # Si aucun fichier trouvé, lever une erreur
+    if not all_files:
+        raise FileNotFoundError(f"No .pt file found in the folder {folder_path}")
+
+    # Mélange des fichiers pour éviter les biais
     random.shuffle(all_files)
+
+    # Si nb_image est spécifié, on prend uniquement ce nombre de fichiers
+    if nb_image is not None:
+        all_files = all_files[:nb_image]
 
     selected_features = []
     selected_labels = []
 
-    for filename in all_files[:nb_image]:
-        data = torch.load(filename)
+    # Parcours et extraction des données des fichiers sélectionnés
+    for filename in all_files:
+        data = torch.load(filename)  # Charger le fichier .pt
 
+        # Extraction des features et labels
         features = data['features'].tolist()
         labels = data['labels']
 
+        # Conversion des features en tableau numpy
         features_np = np.array([np.array(tensor) for tensor in features])
 
+        # Ajout des données aux listes globales
         selected_features.extend(features_np)
         selected_labels.extend(labels)
 
+    # Conversion finale des features en numpy array
     selected_features_np = np.array(selected_features)
     return selected_features_np, selected_labels
 
+
+def get_features_from_label_type(folder_path, label_type):
+    feature_label = []
+    for filename in os.listdir(folder_path):
+        if filename.endswith('.pt'):
+            file_path = os.path.join(folder_path, filename)
+
+            data = torch.load(file_path)
+            features = data['features'].tolist()
+            labels = data['labels']
+
+            features_np = np.array([np.array(tensor) for tensor in features])
+
+            indices = [i for i, x in enumerate(labels) if x == label_type]
+
+            if len(indices) > 0:
+                for indice in indices:
+                    feature_label.append(features_np[indice])
+    return feature_label
+
+
+def get_image_labels_from_feature(feature, folder_path):
+    for filename in os.listdir(folder_path):
+        if filename.endswith('.pt'):
+            file_path = os.path.join(folder_path, filename)
+
+            data = torch.load(file_path)
+
+            features = data['features'].tolist()
+            labels = data['labels']
+
+            # Convert features to numpy array for comparison
+            features_np = np.array([np.array(tensor) for tensor in features])
+            equal = []
+            #Check if feature is in this image
+
+            for f in features_np:
+                equal.append(np.all(f == feature))
+
+            index = np.where(equal)[0]
+            if len(index) > 0:
+                index = index[0]  # Take the first index if there are multiple matches
+                return filename[:-3], index, labels
+
+    # Return None if no matching image is found
+    return None, None, None
 
 def load_data(folder_path, nb_image=None):
     if nb_image is None:

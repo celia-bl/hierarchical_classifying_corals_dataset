@@ -1,9 +1,14 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+import graphviz
+import plotly.express as px
+import random
+from crop_images import get_patch_image
+from load_data import get_image_labels_from_feature, get_features_from_label_type
 
 
-
+# ----------------------- METRICS ------------------------------------------
 def plot_metrics_by_nb_images(flat_reports, flat_hi_reports, hi_flat_reports, hi_reports):
     plt.figure(figsize=(15, 9))
 
@@ -123,3 +128,117 @@ def plot_intermediate_metrics(flat_intermediate_reports, hi_intermediate_reports
 
         plt.tight_layout()
         plt.show(block=False)
+
+
+# ---------------------------------------- VISUALIZE HIERARCHY AND DATASET ------------------------------------------------
+def plot_hierarchy_graphviz(hierarchy, root_name="Root"):
+    """
+    Affiche la hiérarchie avec Graphviz, en ajoutant un nœud racine explicite s'il n'est pas déjà présent.
+
+    Args:
+        hierarchy (dict): Dictionnaire représentant la hiérarchie.
+        root_name (str): Nom du nœud racine.
+    """
+    # Création du graphe
+    dot = graphviz.Digraph(format="png")
+    dot.attr(rankdir="LR")  # Orientation gauche-droite ou changez par "TB" pour top-bottom
+
+    # Ajout du nœud racine
+    if root_name not in hierarchy.values():
+        dot.node(root_name)
+
+    # Ajouter tous les nœuds et arêtes
+    for child, parent in hierarchy.items():
+        if parent is None:  # Si le nœud n'a pas de parent, connectez-le à la racine
+            dot.edge(root_name, child)
+        else:
+            dot.edge(parent, child)
+
+    # Afficher ou sauvegarder
+    dot.render("hierarchy_graph", view=True)  # Sauvegarde et ouvre le fichier "hierarchy_graph.png"
+
+
+def plot_hierarchy_sunburst(hierarchy, root="root"):
+    """
+    Plotte une hiérarchie de deux façons :
+    1. Un arbre hiérarchique non-orienté avec Graphviz.
+    2. Un diagramme en sunburst avec Plotly Express.
+
+    Arguments :
+    - hierarchy : dict, la hiérarchie sous forme de dictionnaire {noeud: parent}.
+    - root : str, le noeud racine pour Graphviz (facultatif).
+    """
+    # Convertir la hiérarchie en une liste de parent-enfant
+    edges = [(parent, child) for child, parent in hierarchy.items() if parent is not None]
+    # Préparer les données pour Plotly
+    data = [{"parent": parent if parent else root, "child": child} for child, parent in hierarchy.items()]
+    df = pd.DataFrame(data)
+
+    # Créer le sunburst
+    fig = px.sunburst(
+        df,
+        names="child",
+        parents="parent",
+        title="Diagramme Sunburst de la hiérarchie",
+    )
+    fig.show()
+
+
+def plot_hierarchy_sunburst_balanced(hierarchy, occurrences, root="root"):
+    """
+    Arguments :
+    - hierarchy : dict, la hiérarchie sous forme de dictionnaire {noeud: parent}.
+    - occurrences : dict, le nombre d'occurrences pour chaque label, sous la forme {label: nombre_occurences}.
+    - root : str, le noeud racine pour Graphviz (facultatif).
+    """
+    # Convertir la hiérarchie en une liste de parent-enfant
+    edges = [(parent, child) for child, parent in hierarchy.items() if parent is not None]
+
+    # Préparer les données pour Plotly en incluant le nombre d'occurrences
+    data = []
+    for child, parent in hierarchy.items():
+        data.append({
+            "parent": parent if parent else root,
+            "child": child,
+            "size": occurrences.get(child, 0)  # Utiliser 0 si l'occurrence n'est pas dans le dictionnaire
+        })
+
+    df = pd.DataFrame(data)
+
+    # Créer le Sunburst avec les tailles proportionnelles aux occurrences
+    fig = px.sunburst(
+        df,
+        names="child",
+        parents="parent",
+        values="size",  # Attribuer la taille des catégories en fonction des occurrences
+        title="Diagramme Sunburst de la hiérarchie",
+    )
+
+    fig.show()
+
+
+def plot_occurences(occurences):
+    # Décomposer les labels et leurs occurrences
+    labels, counts = zip(*occurences.items())
+
+    # Trier les labels par nombre d'occurrences
+    sorted_indices = sorted(range(len(counts)), key=lambda i: counts[i], reverse=True)
+    sorted_labels = [labels[i] for i in sorted_indices]
+    sorted_counts = [counts[i] for i in sorted_indices]
+
+    # Créer l'histogramme
+    plt.figure(figsize=(25, 10))
+    bars = plt.bar(sorted_labels, sorted_counts, color='skyblue')
+    plt.xlabel('Labels')
+    plt.ylabel('Occurrences')
+    plt.title('Histogramme des Labels')
+    plt.xticks(ticks=range(len(sorted_labels)), labels=sorted_labels, rotation=45)
+
+    # Ajouter le nombre au-dessus de chaque barre
+    for bar in bars:
+        yval = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width() / 2, yval, int(yval),
+                 ha='center', va='bottom')  # Centre le texte et le place au-dessus de la barre
+
+    plt.tight_layout()  # Ajuster les marges
+    plt.show()
