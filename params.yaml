@@ -6,13 +6,13 @@ dataset: "RIO"
 crop_size: 224
 
 # Path where the images are stored
-image_path: "./Images_RIO"
+image_path: "../data_corals/Rio_do_Fogo_Benthic_Images"
 
 # Path where you want to store the extracted features
-features_path: './.features'
+features_path: '../data_corals/.features'
 
 # Path to annotations file (required for RIO and TasCPC datasets)
-annotations_file: "./annotations/annotations.csv"
+annotations_file: "../data_corals/annotations/annotations.csv"
 
 # Path to store the results
 result_folder: './results'
@@ -24,7 +24,7 @@ model_extraction_name: 'efficientnet-b0'
 weights_file: './weights/efficientnet_b0_ver1.pt'
 
 # Labelset file (useful only for CoralNet datasets like RIO)
-labelset_file: './labelset/labelset.csv'
+labelset_file: '../data_corals/labelset/labelset.csv'
 
 # List of the number of training patches to use for training
 list_nb_training_patches: [2, 20]
