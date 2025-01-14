@@ -37,7 +37,7 @@ def plot_label_distribution(y):
     plt.title('Distribution of Labels in y_test')
     plt.xticks(sorted_labels)  # Afficher les labels sur l'axe des x
     plt.grid(axis='y', linestyle='--', alpha=0.7)
-    plt.show()
+    plt.show(block=False)
 
 
 def plot_avg_distrib(average_label_counts):
@@ -77,4 +77,4 @@ def plot_avg_distrib(average_label_counts):
     plt.title('Average Distribution of Labels Across Runs')
     plt.xticks(sorted_labels)  # Afficher les labels sur l'axe des x
     plt.grid(axis='y', linestyle='--', alpha=0.7)
-    plt.show()
+    plt.show(block=False)

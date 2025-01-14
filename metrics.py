@@ -1,7 +1,7 @@
 from hierarchy_utils import convert_labels_to_hierarchy, convert_hierarchy_to_label
 from sklearn.metrics import classification_report, f1_score, precision_score, recall_score, accuracy_score
 from hiclass.metrics import f1, precision, recall
-from utils import extract_last_element, count_label_occurrences
+from utils_file import extract_last_element, count_label_occurrences
 
 
 def hierarchical_metrics_from_flat(y_pred, y_true, hierarchy):
@@ -37,7 +37,7 @@ def normal_metrics(y_hier_pred, y_hier_true):
     # Generate classification report
     report = classification_report(y_true_last, new_y_pred, target_names=class_names, zero_division=0, output_dict=True)
 
-    print("Classification Report:\n", report)
+    #print("Classification Report:\n", report)
 
     #plt.figure(figsize=(15, 15))
     #ConfusionMatrixDisplay.from_predictions(y_true_last, y_pred_last, ax=plt.gca(), xticks_rotation=90)
