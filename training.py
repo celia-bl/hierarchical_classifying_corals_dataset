@@ -264,7 +264,6 @@ def main_train(folder_path, flat_classifiers, hierarchical_classifiers, list_nb_
     #print('Final dict ', hi_reports)
     #print('Intermediate dict ', flat_intermediate_reports)
 
-
     save_pickle(flat_reports, result_file + '/flat_reports.pkl')
     save_pickle(flat_hi_reports, result_file + '/flat_hi_reports.pkl')
     save_pickle(hi_flat_reports, result_file + '/hi_flat_reports.pkl')

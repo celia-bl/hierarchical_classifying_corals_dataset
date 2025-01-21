@@ -1,0 +1,17 @@
+Bootstrap: docker
+From: ubuntu:22.04
+
+%post
+    # Mise à jour et installation de Python
+    apt-get update && apt-get install -y python3 python3-pip git
+
+    # Installation des dépendances Python
+    pip3 install --no-cache-dir -r /workspace/requirements.txt
+
+    # Nettoyage
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+%files
+    requirements.txt /workspace/requirements.txt  # Copie du fichier de dépendances
+
+

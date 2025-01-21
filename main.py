@@ -20,6 +20,7 @@ def build_classifiers(classifiers_config):
         classifiers_dict[model_type] = MLPClassifier(**params)
 
     return classifiers_dict
+
 def extract_features_from_config(config_path):
     with open(config_path, 'r') as f:
         config = yaml.safe_load(f)
