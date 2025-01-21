@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-import graphviz
+#import graphviz
 import plotly.express as px
 import random
 from load_data import get_image_labels_from_feature, get_features_from_label_type
@@ -130,6 +130,7 @@ def plot_intermediate_metrics(flat_intermediate_reports, hi_intermediate_reports
 
 
 # ---------------------------------------- VISUALIZE HIERARCHY AND DATASET ------------------------------------------------
+'''
 def plot_hierarchy_graphviz(hierarchy, root_name="Root"):
     """
     Affiche la hiérarchie avec Graphviz, en ajoutant un nœud racine explicite s'il n'est pas déjà présent.
@@ -155,7 +156,7 @@ def plot_hierarchy_graphviz(hierarchy, root_name="Root"):
 
     # Afficher ou sauvegarder
     dot.render("hierarchy_graph", view=True)  # Sauvegarde et ouvre le fichier "hierarchy_graph.png"
-
+'''
 
 def plot_hierarchy_sunburst(hierarchy, root="root"):
     """
