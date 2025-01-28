@@ -63,7 +63,6 @@ def train_and_evaluate_hierarchical(classifier, x_train, x_test, y_hier_train, y
             }
 
     if int_labels is not None:
-
         intermediate_metrics = metrics_intermediate_labels(y_hier_test, y_hier_pred, y_hier_train, int_labels)
     else:
         intermediate_metrics = None
@@ -121,7 +120,7 @@ def main_train(folder_path, flat_classifiers, hierarchical_classifiers, list_nb_
     elif dataset == 'TasCPC':
         x_train, x_test, y_train, y_test = load_data(folder_path)
 
-    plot_label_distribution(y_test)
+    #plot_label_distribution(y_test)
 
     for classifier_name in flat_classifiers.keys():
         flat_reports[classifier_name] = {}
@@ -141,7 +140,7 @@ def main_train(folder_path, flat_classifiers, hierarchical_classifiers, list_nb_
         if nb_image < 20000:
             n_runs = 10
         else:
-            n_runs = 1
+            n_runs = 3
         flat_run_reports = {classifier_name: [] for classifier_name in flat_classifiers.keys()}
         flat_hi_run_reports = {classifier_name: [] for classifier_name in flat_classifiers.keys()}
         flat_intermediate_run_reports = {classifier_name: [] for classifier_name in flat_classifiers.keys()}
@@ -159,8 +158,12 @@ def main_train(folder_path, flat_classifiers, hierarchical_classifiers, list_nb_
 
             x_train_shuffled = [x_train[i] for i in indices]
             y_train_shuffled = [y_train[i] for i in indices]
-            x_train_subset = x_train_shuffled[:nb_image]
-            y_train_subset = y_train_shuffled[:nb_image]
+            if nb_image > len(x_train_shuffled):
+                x_train_subset = x_train_shuffled[:len(x_train_shuffled)]
+                y_train_subset = y_train_shuffled[:len(y_train_shuffled)]
+            else :
+                x_train_subset = x_train_shuffled[:nb_image]
+                y_train_subset = y_train_shuffled[:nb_image]
 
 
             #load representative data
@@ -241,7 +244,7 @@ def main_train(folder_path, flat_classifiers, hierarchical_classifiers, list_nb_
         #print(flat_run_reports)
         #print(flat_hi_run_reports)
         average_label_counts = {label: np.mean(counts) for label, counts in label_counts.items()}
-        plot_avg_distrib(average_label_counts)
+        #plot_avg_distrib(average_label_counts)
         # Compute mean and standard deviation for flat classifiers
         for classifier_name in flat_classifiers.keys():
             flat_reports = calculate_means(flat_run_reports, classifier_name, nb_image, flat_reports)
@@ -264,18 +267,19 @@ def main_train(folder_path, flat_classifiers, hierarchical_classifiers, list_nb_
     #print('Final dict ', hi_reports)
     #print('Intermediate dict ', flat_intermediate_reports)
 
-    save_pickle(flat_reports, result_file + '/flat_reports.pkl')
-    save_pickle(flat_hi_reports, result_file + '/flat_hi_reports.pkl')
-    save_pickle(hi_flat_reports, result_file + '/hi_flat_reports.pkl')
-    save_pickle(hi_reports, result_file + '/hi_reports.pkl')
-    save_pickle(flat_intermediate_reports, result_file + '/flat_intermediate_reports.pkl')
-    save_pickle(hi_intermediate_reports, result_file + '/hi_intermediate_reports.pkl')
-    save_pickle(y_test, result_file + '/y_test.pkl')
-    save_pickle(intermediate_labels, result_file + '/intermediate_labels.pkl')
+        save_pickle(flat_reports, result_file + '/flat_reports.pkl')
+        save_pickle(flat_hi_reports, result_file + '/flat_hi_reports.pkl')
+        save_pickle(hi_flat_reports, result_file + '/hi_flat_reports.pkl')
+        save_pickle(hi_reports, result_file + '/hi_reports.pkl')
+        save_pickle(flat_intermediate_reports, result_file + '/flat_intermediate_reports.pkl')
+        save_pickle(hi_intermediate_reports, result_file + '/hi_intermediate_reports.pkl')
+        save_pickle(y_test, result_file + '/y_test.pkl')
+        save_pickle(intermediate_labels, result_file + '/intermediate_labels.pkl')
+        save_pickle(flat_emissions_reports, result_file + '/flat_emissions.pkl')
+        save_pickle(hi_emissions_reports, result_file + '/hi_emissions.pkl')
 
-    print(flat_emissions_reports)
-    plot_metrics_by_nb_images(flat_reports, flat_hi_reports, hi_flat_reports, hi_reports)
-    plot_intermediate_metrics(flat_intermediate_reports, hi_intermediate_reports)
+    #plot_metrics_by_nb_images(flat_reports, flat_hi_reports, hi_flat_reports, hi_reports)
+    #plot_intermediate_metrics(flat_intermediate_reports, hi_intermediate_reports)
     #comparison_cover(flat_intermediate_reports, hi_intermediate_reports, y_test, intermediate_labels)
     #plot_mispredict_vectors(mispredicted_vectors_hi, mispredicted_vectors_flat, folder_path, annotations_file, path_images_batches)
 

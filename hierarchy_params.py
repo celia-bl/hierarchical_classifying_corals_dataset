@@ -194,7 +194,7 @@ def get_hierarchy_info(config_path):
             'Algae': None,
             'Macro': 'Algae',
             'Turf': 'Algae',
-            'CCA': 'Algae',
+            'Cca': 'Algae',
             'Acrop': 'Hard',
             'Acan': 'Hard',
             'Astreo': 'Hard',

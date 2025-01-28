@@ -2,6 +2,7 @@ from feature_extractor import FeatureExtractor
 from typing import Optional
 from data_classes import Batch, ImageLabels
 from read_file import read_csv_file, read_csv_file_from_fraction, read_txt_file
+from utils.emissions import tracker, clean_emissions_data
 import os
 
 def extract_all_features(dataset, path_images, annotations_file, CROP_SIZE, model_name, weights_file):
@@ -13,7 +14,11 @@ def extract_all_features(dataset, path_images, annotations_file, CROP_SIZE, mode
         full_batch = create_full_batch_MLC(path_images)
     elif dataset == 'TasCPC':
         full_batch = create_full_batch_TASCPC(path_images, annotations_file)
+    tracker.start_task("extract_features")
     extract_features(full_batch, CROP_SIZE, path_images, model_name, dataset, weights_file)
+    emissions_data = tracker.stop_task()
+    clean_emissions = clean_emissions_data(emissions_data)
+    return clean_emissions
 
 def extract_features(batch, crop_size, input_folder, model_name, dataset, weights_file: Optional):
     batch_size = batch.batch_size()
