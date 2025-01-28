@@ -45,7 +45,7 @@ def get_lists_memory_size(lists_list):
 class FeatureExtractor:
     def __init__(self, model_name, weights_file=None, save_path="./.features/"):
         self.model_name = model_name
-        if model_name not in timm.list_models(pretrained=True) and model_name != 'efficientnet-b0':
+        if model_name not in timm.list_models(pretrained=True) and model_name != 'efficientnet-b0' and model_name != 'benthicnet-vit':
             print("Error, '%s' is not a valid model name for timm library. For a list of available pretrained models, "
                   "run: \n'timm.list_models(pretrained=True)'" % model_name)
             return
@@ -92,8 +92,36 @@ class FeatureExtractor:
             param.requires_grad = False
         return model
 
+    @staticmethod
+    def _load_ckpt_weights(model: Any, ckpt_path: str) -> Any:
+        """
+        Load model weights from a checkpoint file.
+        :param model: The model to load the weights into.
+        :param ckpt_path: Path to the checkpoint file.
+        :return: Model with loaded weights.
+        """
+        print(f"Loading checkpoint weights from {ckpt_path}")
+        checkpoint = torch.load(ckpt_path, map_location=torch.device("cpu"))
+
+        # Assume the state dict is under a "state_dict" key, or directly load it
+        state_dict = checkpoint.get('state_dict', checkpoint)
+
+        # Remove any "module." prefix if saved with DataParallel
+        new_state_dict = OrderedDict()
+        for k, v in state_dict.items():
+            new_k = k[7:] if k.startswith("module.") else k
+            new_state_dict[new_k] = v
+
+        model.load_state_dict(new_state_dict)
+
+        # Freeze model parameters
+        for param in model.parameters():
+            param.requires_grad = False
+        return model
+
+
     def load_model(self):
-        if self.weights_file is not None:
+        if self.weights_file is not None and self.weights_file.endswith('.pt'):
             print("Loading pretrained model ", self.model_name, ' from ', self.weights_file)
             # load efficient net
             efficientnet = models.get_model('efficientnet', self.model_name, 1275)
@@ -101,6 +129,11 @@ class FeatureExtractor:
             with open(self.weights_file, 'rb') as f:
                 weights_datastream = BytesIO(f.read())
                 self.model = self._load_weights(efficientnet, weights_datastream)
+        elif self.weights_file is not None and self.weights_file.endswith('.cpkt'):
+            print("Loading pretrained model ", self.model_name, ' from ', self.weights_file)
+
+            #load VIT
+            vit = models.get_model('vit', self.model_name, 1275)
         else:
             print("Loading model ", self.model_name)
             self.model = timm.create_model(self.model_name, pretrained=True, num_classes=0)

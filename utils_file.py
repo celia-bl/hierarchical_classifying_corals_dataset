@@ -2,7 +2,7 @@ import pickle
 import numpy as np
 
 def calculate_means(metric_report, classifier_name, nb_image, final_metric_report):
-    print("Calculate means ", classifier_name, metric_report[classifier_name])
+    #print("Calculate means ", classifier_name, metric_report[classifier_name])
     precision_values = [report['precision'] for report in metric_report[classifier_name]]
     recall_values = [report['recall'] for report in metric_report[classifier_name]]
     f1_values = [report['f1-score'] for report in metric_report[classifier_name]]
@@ -28,7 +28,7 @@ def calculate_means(metric_report, classifier_name, nb_image, final_metric_repor
 
 
 def calculate_intermediate_means(metric_report, classifier_name, nb_image, final_metric_report):
-    print("Intermediate report", metric_report)
+    #print("Intermediate report", metric_report)
     results = {}
 
     # Obtenir les labels
@@ -102,3 +102,31 @@ def load_pickle(filename):
     """Charge un objet Python depuis un fichier pickle."""
     with open(filename, 'rb') as file:
         return pickle.load(file)
+
+def calculate_means_emissions(flat_emissions_run_reports, classifier_name, nb_image, flat_emissions_reports):
+    """
+    Calculate mean of emissions of the same classifier across several runs
+    :param flat_emissions_run_reports: dict with lists of emissions for each runs
+    :param classifier_name: name of the classifier
+    :param nb_image: nb_image of the run
+    :param flat_emissions_reports: dict to store the mean
+    """
+    means_emissions = {}
+    keys_to_exclude = {'run_id', 'country_name', 'country_iso_code', 'region', 'cloud_provider', 'cloud_region', 'os',
+                       'python_version', 'codecarbon_version', 'cpu_count', 'cpu_model', 'gpu_count', 'gpu_model',
+                       'ram_total_size', 'tracking_mode', 'on_cloud', 'pue'}
+    count = len(flat_emissions_run_reports[classifier_name])
+
+    # Calculate totals for each key
+    for entry in flat_emissions_run_reports[classifier_name]:
+        for key, value in entry.items():
+            if key not in keys_to_exclude and isinstance(value, (int, float)):
+                if key not in means_emissions:
+                    means_emissions[key] = 0
+                means_emissions[key] += value
+
+    # Calculate average
+    means_emissions = {key: total / count for key, total in means_emissions.items()}
+    flat_emissions_reports[classifier_name][nb_image] = means_emissions
+
+    return flat_emissions_reports

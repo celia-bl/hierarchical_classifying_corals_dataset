@@ -1,10 +1,9 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-import graphviz
+#import graphviz
 import plotly.express as px
 import random
-from crop_images import get_patch_image
 from load_data import get_image_labels_from_feature, get_features_from_label_type
 
 
@@ -31,7 +30,7 @@ def plot_metrics_by_nb_images(flat_reports, flat_hi_reports, hi_flat_reports, hi
     plt.yticks(fontsize=32)
     plt.tight_layout()
     plt.savefig('f1_score_plot_rio.png')
-    plt.show()
+    plt.show(block=False)
 
     plt.figure(figsize=(15, 9))
     for reports, report_type in zip([flat_hi_reports, hi_reports], ['Flat Classifier (baseline)', 'Hierarchical Classifier (ours)']):
@@ -131,6 +130,7 @@ def plot_intermediate_metrics(flat_intermediate_reports, hi_intermediate_reports
 
 
 # ---------------------------------------- VISUALIZE HIERARCHY AND DATASET ------------------------------------------------
+'''
 def plot_hierarchy_graphviz(hierarchy, root_name="Root"):
     """
     Affiche la hiérarchie avec Graphviz, en ajoutant un nœud racine explicite s'il n'est pas déjà présent.
@@ -156,7 +156,7 @@ def plot_hierarchy_graphviz(hierarchy, root_name="Root"):
 
     # Afficher ou sauvegarder
     dot.render("hierarchy_graph", view=True)  # Sauvegarde et ouvre le fichier "hierarchy_graph.png"
-
+'''
 
 def plot_hierarchy_sunburst(hierarchy, root="root"):
     """
@@ -181,7 +181,7 @@ def plot_hierarchy_sunburst(hierarchy, root="root"):
         parents="parent",
         title="Diagramme Sunburst de la hiérarchie",
     )
-    fig.show()
+    fig.show(block=False)
 
 
 def plot_hierarchy_sunburst_balanced(hierarchy, occurrences, root="root"):
@@ -241,4 +241,4 @@ def plot_occurences(occurences):
                  ha='center', va='bottom')  # Centre le texte et le place au-dessus de la barre
 
     plt.tight_layout()  # Ajuster les marges
-    plt.show()
+    plt.show(block=False)

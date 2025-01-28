@@ -6,13 +6,13 @@ dataset: "MLC"
 crop_size: 224
 
 # Path where the images are stored
-image_path: "./Images_RIO"
+image_path: "../data_corals/MLC"
 
 # Path where you want to store the extracted features
 features_path: './.features'
 
 # Path to annotations file (required for RIO and TasCPC datasets)
-annotations_file: "./annotations/annotations.csv"
+annotations_file: ""
 
 # Path to store the results
 result_folder: './results'
@@ -24,10 +24,10 @@ model_extraction_name: 'efficientnet-b0'
 weights_file: './weights/efficientnet_b0_ver1.pt'
 
 # Labelset file (useful only for CoralNet datasets like RIO)
-labelset_file: './labelset/labelset.csv'
+labelset_file: ''
 
 # List of the number of training patches to use for training
-list_nb_training_patches: [2, 20]
+list_nb_training_patches: [1000, 5000, 10000, 25000, 50000, 75000, 100000, 150000, 200000, 250000, 300000, 350000, 369000]
 
 # Classifiers to use for training (currently supports MLP)
 classifiers:
