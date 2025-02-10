@@ -11,6 +11,7 @@ from plot_logic import plot_metrics_by_nb_images, plot_intermediate_metrics
 from utils_file import calculate_means, calculate_intermediate_means, save_pickle, calculate_means_emissions
 from utils.emissions import tracker, clean_emissions_data
 import yaml
+from tqdm import tqdm
 
 from sklearn.neural_network import MLPClassifier
 
@@ -137,8 +138,12 @@ def main_train(folder_path, flat_classifiers, hierarchical_classifiers, list_nb_
         hi_intermediate_reports[classifier_name] = {}
         mispredicted_vectors_hi[classifier_name] = {}
         hi_emissions_reports[classifier_name] = {}
+    progress_bar = tqdm(list_nb_training_patches, desc="Processing training sizes")
 
-    for nb_image in list_nb_training_patches:
+    for nb_image in progress_bar:
+        if nb_image > len(x_train_shuffled):
+            nb_image = len(x_train_shuffled)
+        progress_bar.set_description(f"Processing {nb_image} training images")
         n_runs = 10
         flat_run_reports = []
         flat_hi_run_reports = []
@@ -157,8 +162,6 @@ def main_train(folder_path, flat_classifiers, hierarchical_classifiers, list_nb_
 
             x_train_shuffled = [x_train[i] for i in indices]
             y_train_shuffled = [y_train[i] for i in indices]
-            if nb_image > len(x_train_shuffled):
-                nb_image = len(x_train_shuffled)
 
             x_train_subset = x_train_shuffled[:nb_image]
             y_train_subset = y_train_shuffled[:nb_image]
