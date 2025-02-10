@@ -15,7 +15,7 @@ features_path: './.features'
 annotations_file: ""
 
 # Path to store the results
-result_folder: './results'
+result_folder: './result_cluster/results'
 
 # Name for the model used for feature extraction (efficientnet-b0 pretrained by CoralNet)
 model_extraction_name: 'efficientnet-b0'
@@ -27,7 +27,7 @@ weights_file: './weights/efficientnet_b0_ver1.pt'
 labelset_file: ''
 
 # List of the number of training patches to use for training
-list_nb_training_patches: [1000, 5000, 10000, 25000, 50000, 75000, 100000, 150000, 200000, 250000, 300000, 350000, 369000]
+list_nb_training_patches: [1000, 5000, 10000, 25000, 50000, 75000, 100000, 150000, 200000, 250000, 300000, 350000, 400000]
 
 # Classifiers to use for training (currently supports MLP)
 classifiers:

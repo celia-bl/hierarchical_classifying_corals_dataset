@@ -3,7 +3,7 @@ import yaml
 import os
 from training import main_train, MLPClassifier
 from extract_features import extract_all_features
-from visualize_data import visualize_data
+from visualize_data import visualize_data, visualize_results
 from utils_file import save_pickle
 import warnings
 
@@ -100,7 +100,8 @@ def visualize_data_from_config(config_path):
     weights_file = config.get('weights_file')
 
     print(f"Visualing data for dataset: {dataset_name} from {image_path}")
-    visualize_data(config_path)
+    #visualize_data(config_path)
+    visualize_results(config_path)
     pass
 
 def get_config_path(cli_path):

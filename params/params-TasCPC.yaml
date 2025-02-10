@@ -6,7 +6,7 @@ dataset: "TasCPC"
 crop_size: 224
 
 # Path where the images are stored
-image_path: "../data_corals/TasCPC/images_TasCPC"
+image_path: "../data_corals/TasCPC/TasCPC_LC/images_LC"
 
 # Path where you want to store the extracted features
 features_path: './.features'
@@ -15,7 +15,7 @@ features_path: './.features'
 annotations_file: "../data_corals/TasCPC/data_TasCPC_TasCPC_LBL/keypointdata.csv"
 
 # Path to store the results
-result_folder: './results'
+result_folder: './result_cluster/results'
 
 # Name for the model used for feature extraction (efficientnet-b0 pretrained by CoralNet)
 model_extraction_name: 'efficientnet-b0'
@@ -27,7 +27,7 @@ weights_file: './weights/efficientnet_b0_ver1.pt'
 labelset_file: ''
 
 # List of the number of training patches to use for training
-list_nb_training_patches: [1000, 5000, 7500, 10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000, 55000, 60000, 62200]
+list_nb_training_patches: [1000, 5000, 7500, 10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000, 55000, 60000, 65000]
 
 # Classifiers to use for training (currently supports MLP)
 classifiers:
