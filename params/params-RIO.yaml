@@ -6,7 +6,7 @@ dataset: "RIO"
 crop_size: 224
 
 # Path where the images are stored
-image_path: "../data_corals/Rio_do_Fogo"
+image_path: "../data_corals/Rio_do_Fogo_Benthic_Images"
 
 # Path where you want to store the extracted features
 features_path: './.features'
@@ -27,7 +27,7 @@ weights_file: './weights/efficientnet_b0_ver1.pt'
 labelset_file: '../data_corals/labelset/labelset.csv'
 
 # List of the number of training patches to use for training
-list_nb_training_patches: [1000, 2500, 5000, 7500, 10000, 12500, 15000, 17500, 20000, 22500, 25000, 27500, 30000, 32500, 35000]
+list_nb_training_patches: [1000, 2500, 5000, 7500, 10000, 12500, 15000, 17500, 20000, 22500, 25000, 27500, 30000, 32500, 35000, 40000]
 
 # Classifiers to use for training (currently supports MLP)
 classifiers:

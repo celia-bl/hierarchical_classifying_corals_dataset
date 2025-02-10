@@ -102,10 +102,12 @@ def main_train(folder_path, flat_classifiers, hierarchical_classifiers, list_nb_
     flat_reports = {}
     hi_flat_reports = {}
     flat_emissions_reports = {}
+
     hi_reports = {}
     flat_hi_reports = {}
     hi_intermediate_reports = {}
     hi_emissions_reports = {}
+
     flat_intermediate_reports = {}
     mispredicted_vectors_flat = {}
     mispredicted_vectors_hi = {}
@@ -137,19 +139,16 @@ def main_train(folder_path, flat_classifiers, hierarchical_classifiers, list_nb_
         hi_emissions_reports[classifier_name] = {}
 
     for nb_image in list_nb_training_patches:
-        if nb_image < 20000:
-            n_runs = 10
-        else:
-            n_runs = 3
-        flat_run_reports = {classifier_name: [] for classifier_name in flat_classifiers.keys()}
-        flat_hi_run_reports = {classifier_name: [] for classifier_name in flat_classifiers.keys()}
-        flat_intermediate_run_reports = {classifier_name: [] for classifier_name in flat_classifiers.keys()}
-        flat_emissions_run_reports = {classifier_name: [] for classifier_name in flat_classifiers.keys()}
+        n_runs = 10
+        flat_run_reports = []
+        flat_hi_run_reports = []
+        flat_intermediate_run_reports = []
+        flat_emissions_run_reports = []
 
-        hi_run_reports = {classifier_name: [] for classifier_name in hierarchical_classifiers.keys()}
-        hi_flat_run_reports = {classifier_name: [] for classifier_name in hierarchical_classifiers.keys()}
-        hi_intermediate_run_reports = {classifier_name: [] for classifier_name in hierarchical_classifiers.keys()}
-        hi_emissions_run_reports = {classifier_name: [] for classifier_name in hierarchical_classifiers.keys()}
+        hi_run_reports = []
+        hi_flat_run_reports = []
+        hi_intermediate_run_reports = []
+        hi_emissions_run_reports = []
 
         label_counts = defaultdict(lambda: [])
         for _ in range(n_runs):
@@ -159,11 +158,10 @@ def main_train(folder_path, flat_classifiers, hierarchical_classifiers, list_nb_
             x_train_shuffled = [x_train[i] for i in indices]
             y_train_shuffled = [y_train[i] for i in indices]
             if nb_image > len(x_train_shuffled):
-                x_train_subset = x_train_shuffled[:len(x_train_shuffled)]
-                y_train_subset = y_train_shuffled[:len(y_train_shuffled)]
-            else :
-                x_train_subset = x_train_shuffled[:nb_image]
-                y_train_subset = y_train_shuffled[:nb_image]
+                nb_image = len(x_train_shuffled)
+
+            x_train_subset = x_train_shuffled[:nb_image]
+            y_train_subset = y_train_shuffled[:nb_image]
 
 
             #load representative data
@@ -191,10 +189,10 @@ def main_train(folder_path, flat_classifiers, hierarchical_classifiers, list_nb_
                                                            x_test, y_test,
                                                            hierarchy=hierarchy,  int_labels=intermediate_labels)
 
-                flat_run_reports[classifier_name].append(flat_report['weighted avg'])
-                flat_hi_run_reports[classifier_name].append(flat_hi_report)
-                flat_intermediate_run_reports[classifier_name].append(flat_intermediate_metric)
-                flat_emissions_run_reports[classifier_name].append(emissions_data_flat)
+                flat_run_reports.append(flat_report['weighted avg'])
+                flat_hi_run_reports.append(flat_hi_report)
+                flat_intermediate_run_reports.append(flat_intermediate_metric)
+                flat_emissions_run_reports.append(emissions_data_flat)
 
                 for mispredicted_feature in mispredicted_vectors_flat_run.keys():
                     if mispredicted_feature not in mispredicted_vectors_flat[classifier_name]:
@@ -225,10 +223,10 @@ def main_train(folder_path, flat_classifiers, hierarchical_classifiers, list_nb_
                                                                  x_train_subset, x_test,
                                                                  y_hier_train, y_hier_test,
                                                                  int_labels=intermediate_labels)
-                hi_run_reports[classifier_name].append(hi_report)
-                hi_flat_run_reports[classifier_name].append(hi_flat_report)
-                hi_intermediate_run_reports[classifier_name].append(hi_intermediate_metric)
-                hi_emissions_run_reports[classifier_name].append(hi_emissions)
+                hi_run_reports.append(hi_report)
+                hi_flat_run_reports.append(hi_flat_report)
+                hi_intermediate_run_reports.append(hi_intermediate_metric)
+                hi_emissions_run_reports.append(hi_emissions)
 
                 for mispredicted_feature in mispredicted_vectors_hi_run.keys():
                     if mispredicted_feature not in mispredicted_vectors_hi[classifier_name]:
@@ -247,17 +245,17 @@ def main_train(folder_path, flat_classifiers, hierarchical_classifiers, list_nb_
         #plot_avg_distrib(average_label_counts)
         # Compute mean and standard deviation for flat classifiers
         for classifier_name in flat_classifiers.keys():
-            flat_reports = calculate_means(flat_run_reports, classifier_name, nb_image, flat_reports)
-            flat_hi_reports = calculate_means(flat_hi_run_reports, classifier_name, nb_image, flat_hi_reports)
-            flat_intermediate_reports = calculate_intermediate_means(flat_intermediate_run_reports, classifier_name, nb_image, flat_intermediate_reports)
-            flat_emissions_reports = calculate_means_emissions(flat_emissions_run_reports, classifier_name, nb_image, flat_emissions_reports)
+            flat_reports[classifier_name][nb_image] = flat_run_reports
+            flat_hi_reports[classifier_name][nb_image] = flat_hi_run_reports
+            flat_intermediate_reports[classifier_name][nb_image] = flat_intermediate_run_reports
+            flat_emissions_reports[classifier_name][nb_image] = flat_emissions_run_reports
 
         # Compute mean and standard deviation for hierarchical classifiers
         for classifier_name in hierarchical_classifiers.keys():
-            hi_reports = calculate_means(hi_run_reports, classifier_name, nb_image, hi_reports)
-            hi_flat_reports = calculate_means(hi_flat_run_reports, classifier_name, nb_image, hi_flat_reports)
-            hi_intermediate_reports = calculate_intermediate_means(hi_intermediate_run_reports, classifier_name, nb_image, hi_intermediate_reports)
-            hi_emissions_reports = calculate_means_emissions(hi_emissions_run_reports, classifier_name, nb_image, hi_emissions_reports)
+            hi_reports[classifier_name][nb_image] = hi_run_reports
+            hi_flat_reports[classifier_name][nb_image] = hi_flat_run_reports
+            hi_intermediate_reports[classifier_name][nb_image] = hi_intermediate_run_reports
+            hi_emissions_reports[classifier_name][nb_image] = hi_emissions_run_reports
 
     #print(hi_intermediate_reports)
     #print(flat_intermediate_reports)

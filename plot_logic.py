@@ -30,7 +30,7 @@ def plot_metrics_by_nb_images(flat_reports, flat_hi_reports, hi_flat_reports, hi
     plt.yticks(fontsize=32)
     plt.tight_layout()
     plt.savefig('f1_score_plot_rio.png')
-    plt.show(block=False)
+    plt.show()
 
     plt.figure(figsize=(15, 9))
     for reports, report_type in zip([flat_hi_reports, hi_reports], ['Flat Classifier (baseline)', 'Hierarchical Classifier (ours)']):
@@ -54,7 +54,98 @@ def plot_metrics_by_nb_images(flat_reports, flat_hi_reports, hi_flat_reports, hi
 
     plt.tight_layout()
     plt.savefig('hierarchical_fi_score_plot_rio.png')
-    plt.show(block=False)
+    plt.show()
+
+#---------------------- METRIC VS EMISSIONS ---------------------------------------------
+
+def plot_emissions_vs_performance(flat_emissions, hi_emissions, flat_reports, flat_hi_reports, hi_flat_reports, hi_reports, emission_extraction):
+    plt.figure(figsize=(15, 9))
+
+    # First graph : F1-Score vs emissions
+    # Plot for flat classifiers
+    for classifier_name, nb_images in flat_reports.items():
+        emissions = [flat_emissions[classifier_name][nb_image]['emissions'] for nb_image in nb_images]
+        f1_scores = [metrics['f1-score'] for nb_image, metrics in sorted(nb_images.items())]
+        num_images = list(nb_images.keys())  # Récupérer les nombres d'images d'entraînement
+        last_num_images = num_images[len(num_images)-1]
+        for emission, f1_score, num_image in zip(emissions, f1_scores, num_images):
+            plt.scatter(emission, f1_score, label=f'Flat: {classifier_name}' if num_image == last_num_images else '', color='blue', s=num_image / 200, edgecolors='black')  # Modifier la taille en fonction du nombre d'images
+            plt.text(emission, f1_score-1.5*10e-4, f'{num_image}', fontsize=12, color='black')  # Afficher le nombre d'images à côté du point
+
+    # Plot for hierarchical classifiers (flat mode)
+    for classifier_name, nb_images in hi_flat_reports.items():
+        emissions = [hi_emissions[classifier_name][nb_image]['emissions'] for nb_image in nb_images]
+        f1_scores = [metrics['f1-score'] for nb_image, metrics in sorted(nb_images.items())]
+        num_images = list(nb_images.keys())
+        last_num_images = num_images[len(num_images)-1]
+
+        for emission, f1_score, num_image in zip(emissions, f1_scores, num_images):
+            plt.scatter(emission, f1_score, label=f'Hierarchical: {classifier_name}' if num_image == last_num_images else '', color='orange', s=num_image/200, edgecolors='black')
+            plt.text(emission, f1_score + 0.5*10e-4, f'{num_image}', fontsize=12, color='black')
+
+    # Labels and aesthetics
+    plt.xlabel('Emissions of Carbon', fontsize=36)
+    plt.ylabel('F1-score', fontsize=36)
+    extra_info = plt.Line2D([], [], color='none', label=f'{0:.4f}'.format(emission_extraction["emissions"]))
+
+    handles, labels = plt.gca().get_legend_handles_labels()
+
+    handles.append(extra_info)
+    labels.append(emission_extraction['emissions'])
+
+    plt.legend(handles=handles, labels=labels, fontsize=34)
+    plt.grid(True)
+    plt.xticks(fontsize=32)
+    plt.yticks(fontsize=32)
+
+    plt.tight_layout()
+    plt.savefig('f1_score_vs_emissions.png')
+    plt.show()
+
+    # Second graph : Hierarchical F1-Score vs emissions
+    plt.figure(figsize=(15, 9))
+
+    # Plot for flat classifiers
+    for classifier_name, nb_images in flat_hi_reports.items():
+        emissions = [flat_emissions[classifier_name][nb_image]['emissions'] for nb_image in nb_images]
+        hierarchical_f1_scores = [metrics['f1-score'] for nb_image, metrics in sorted(nb_images.items())]
+        num_images = list(nb_images.keys())
+        last_num_images = num_images[len(num_images)-1]
+
+        for emission, hierarchical_f1_score, num_image in zip(emissions, hierarchical_f1_scores, num_images):
+            plt.scatter(emission, hierarchical_f1_score, label=f'Flat: {classifier_name}' if num_image == last_num_images else '', color='blue', s=num_image/200, edgecolors='black')
+            plt.text(emission, hierarchical_f1_score -1.5*10e-4, f'{num_image}', fontsize=12, color='black')
+
+    # Plot for hierarchical classifiers (hierarchical)
+    for classifier_name, nb_images in hi_reports.items():
+        emissions = [hi_emissions[classifier_name][nb_image]['emissions'] for nb_image in nb_images]
+        hierarchical_f1_scores = [metrics['f1-score'] for nb_image, metrics in sorted(nb_images.items())]
+        num_images = list(nb_images.keys())
+        last_num_images = num_images[len(num_images)-1]
+
+        for emission, hierarchical_f1_score, num_image in zip(emissions, hierarchical_f1_scores, num_images):
+            plt.scatter(emission, hierarchical_f1_score, label=f'Hierarchical: {classifier_name}' if num_image == last_num_images else '', color='orange', s=num_image/200, edgecolors='black')
+            plt.text(emission, hierarchical_f1_score + 0.5*10e-4, f'{num_image}', fontsize=12, color='black')
+
+    # Labels and aesthetics
+    plt.xlabel('Emissions of Carbon', fontsize=36)
+    plt.ylabel('Hierarchical F1-score', fontsize=36)
+    extra_info = plt.Line2D([], [], color='none', label=f'{0:.4f}'.format(emission_extraction["emissions"]))
+
+    handles, labels = plt.gca().get_legend_handles_labels()
+
+    handles.append(extra_info)
+    labels.append(emission_extraction['emissions'])
+
+    plt.legend(handles=handles, labels=labels, fontsize=34)
+    plt.grid(True)
+    plt.xticks(fontsize=32)
+    plt.yticks(fontsize=32)
+
+    plt.tight_layout()
+    plt.savefig('hierarchical_f1_score_vs_emissions.png')
+    plt.show()
+
 
 
 def plot_intermediate_metrics(flat_intermediate_reports, hi_intermediate_reports):

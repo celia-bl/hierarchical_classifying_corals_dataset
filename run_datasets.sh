@@ -5,7 +5,7 @@
 #SBATCH --output=output_%j.log                  # Output file (with job ID)
 #SBATCH --error=error_%j.log                    # Error file (with job ID)
 #SBATCH --time=82:00:00                         # Maximum run time (hh:mm:ss)
-#SBATCH --partition=dfq                         # Partition to use (e.g., 'compute', 'gpu', etc.)
+#SBATCH --partition=defq                         # Partition to use (e.g., 'compute', 'gpu', etc.)
 #SBATCH --nodes=1                               # Number of nodes
 #SBATCH --ntasks=1                              # Number of tasks
 

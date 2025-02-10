@@ -1,5 +1,6 @@
 import pickle
 import numpy as np
+import os
 
 def calculate_means(metric_report, classifier_name, nb_image, final_metric_report):
     #print("Calculate means ", classifier_name, metric_report[classifier_name])
@@ -102,6 +103,19 @@ def load_pickle(filename):
     """Charge un objet Python depuis un fichier pickle."""
     with open(filename, 'rb') as file:
         return pickle.load(file)
+
+
+def load_all_pickles(directory, target_module):
+    for filename in os.listdir(directory):
+        if filename.endswith('.pkl'):
+            var_name = filename[:-4]  # Retirer le ".pkl"
+            file_path = os.path.join(directory, filename)
+
+            data = load_pickle(file_path)  # Charger le fichier
+
+            setattr(target_module, var_name, data)  # Stocker la variable dynamiquement
+            print(f"Chargé : {var_name}")
+
 
 def calculate_means_emissions(flat_emissions_run_reports, classifier_name, nb_image, flat_emissions_reports):
     """
