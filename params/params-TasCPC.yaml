@@ -15,7 +15,7 @@ features_path: './.features'
 annotations_file: "../data_corals/TasCPC/data_TasCPC_TasCPC_LBL/keypointdata.csv"
 
 # Path to store the results
-result_folder: './results'
+result_folder: './result_cluster/results'
 
 # Name for the model used for feature extraction (efficientnet-b0 pretrained by CoralNet)
 model_extraction_name: 'efficientnet-b0'
