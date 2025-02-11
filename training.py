@@ -122,6 +122,8 @@ def main_train(folder_path, flat_classifiers, hierarchical_classifiers, list_nb_
         # x_train, x_test, y_train, y_test = load_representative_uniform_data(folder_path)
     elif dataset == 'TasCPC':
         x_train, x_test, y_train, y_test = load_data(folder_path)
+    else :
+        raise ValueError('Unknown dataset')
 
     #plot_label_distribution(y_test)
 
@@ -141,8 +143,8 @@ def main_train(folder_path, flat_classifiers, hierarchical_classifiers, list_nb_
     progress_bar = tqdm(list_nb_training_patches, desc="Processing training sizes")
 
     for nb_image in progress_bar:
-        if nb_image > len(x_train_shuffled):
-            nb_image = len(x_train_shuffled)
+        if nb_image > len(x_train):
+            nb_image = len(x_train)
         progress_bar.set_description(f"Processing {nb_image} training images")
         n_runs = 10
         flat_run_reports = []

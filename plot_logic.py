@@ -3,6 +3,7 @@ import pandas as pd
 import seaborn as sns
 #import graphviz
 import plotly.express as px
+import numpy as np
 import random
 from load_data import get_image_labels_from_feature, get_features_from_label_type
 
@@ -69,7 +70,7 @@ def plot_emissions_vs_performance(flat_emissions, hi_emissions, flat_reports, fl
         num_images = list(nb_images.keys())  # Récupérer les nombres d'images d'entraînement
         last_num_images = num_images[len(num_images)-1]
         for emission, f1_score, num_image in zip(emissions, f1_scores, num_images):
-            plt.scatter(emission, f1_score, label=f'Flat: {classifier_name}' if num_image == last_num_images else '', color='blue', s=num_image / 200, edgecolors='black')  # Modifier la taille en fonction du nombre d'images
+            plt.scatter(emission, f1_score, label=f'Flat: {classifier_name}' if num_image == last_num_images else '', color='blue', s=100, edgecolors='black')  # Modifier la taille en fonction du nombre d'images
             plt.text(emission, f1_score-1.5*10e-4, f'{num_image}', fontsize=12, color='black')  # Afficher le nombre d'images à côté du point
 
     # Plot for hierarchical classifiers (flat mode)
@@ -80,7 +81,7 @@ def plot_emissions_vs_performance(flat_emissions, hi_emissions, flat_reports, fl
         last_num_images = num_images[len(num_images)-1]
 
         for emission, f1_score, num_image in zip(emissions, f1_scores, num_images):
-            plt.scatter(emission, f1_score, label=f'Hierarchical: {classifier_name}' if num_image == last_num_images else '', color='orange', s=num_image/200, edgecolors='black')
+            plt.scatter(emission, f1_score, label=f'Hierarchical: {classifier_name}' if num_image == last_num_images else '', color='orange', s=100, edgecolors='black')
             plt.text(emission, f1_score + 0.5*10e-4, f'{num_image}', fontsize=12, color='black')
 
     # Labels and aesthetics
@@ -113,7 +114,7 @@ def plot_emissions_vs_performance(flat_emissions, hi_emissions, flat_reports, fl
         last_num_images = num_images[len(num_images)-1]
 
         for emission, hierarchical_f1_score, num_image in zip(emissions, hierarchical_f1_scores, num_images):
-            plt.scatter(emission, hierarchical_f1_score, label=f'Flat: {classifier_name}' if num_image == last_num_images else '', color='blue', s=num_image/200, edgecolors='black')
+            plt.scatter(emission, hierarchical_f1_score, label=f'Flat: {classifier_name}' if num_image == last_num_images else '', color='blue', s=100, edgecolors='black')
             plt.text(emission, hierarchical_f1_score -1.5*10e-4, f'{num_image}', fontsize=12, color='black')
 
     # Plot for hierarchical classifiers (hierarchical)
@@ -124,7 +125,7 @@ def plot_emissions_vs_performance(flat_emissions, hi_emissions, flat_reports, fl
         last_num_images = num_images[len(num_images)-1]
 
         for emission, hierarchical_f1_score, num_image in zip(emissions, hierarchical_f1_scores, num_images):
-            plt.scatter(emission, hierarchical_f1_score, label=f'Hierarchical: {classifier_name}' if num_image == last_num_images else '', color='orange', s=num_image/200, edgecolors='black')
+            plt.scatter(emission, hierarchical_f1_score, label=f'Hierarchical: {classifier_name}' if num_image == last_num_images else '', color='orange', s=100, edgecolors='black')
             plt.text(emission, hierarchical_f1_score + 0.5*10e-4, f'{num_image}', fontsize=12, color='black')
 
     # Labels and aesthetics
@@ -146,6 +147,107 @@ def plot_emissions_vs_performance(flat_emissions, hi_emissions, flat_reports, fl
     plt.savefig('hierarchical_f1_score_vs_emissions.png')
     plt.show()
 
+
+def plot_f1_vs_emission_diff(flat_emissions, hi_emissions, flat_reports, hi_reports):
+    plt.figure(figsize=(15, 9))
+
+    colors = {}  # Associer une couleur unique par classifieur
+    markers = {}  # Associer un style de marqueur unique par classifieur
+    available_colors = ['blue', 'orange', 'green', 'red', 'purple', 'brown', 'pink', 'gray']
+    available_markers = ['o', 's', 'D', '^', 'v', 'P', '*', 'X']
+
+    color_idx = 0
+    marker_idx = 0
+
+    for hi_classifier, hi_nb_images in hi_reports.items():
+        for flat_classifier, flat_nb_images in flat_reports.items():
+            common_nb_images = set(hi_nb_images.keys()) & set(flat_nb_images.keys())
+
+            if not common_nb_images:
+                continue
+
+            # Assigner couleur et marqueur si ce n'est pas encore fait
+            if hi_classifier not in colors:
+                colors[hi_classifier] = available_colors[color_idx % len(available_colors)]
+                color_idx += 1
+            if hi_classifier not in markers:
+                markers[hi_classifier] = available_markers[marker_idx % len(available_markers)]
+                marker_idx += 1
+
+            color = colors[hi_classifier]
+            marker = markers[hi_classifier]
+
+            diff_f1_scores = []
+            diff_emissions = []
+            labels = []
+
+            for nb_image in sorted(common_nb_images):
+                hi_f1 = hi_nb_images[nb_image]['f1-score']
+                flat_f1 = flat_nb_images[nb_image]['f1-score']
+                hi_emission = hi_emissions[hi_classifier][nb_image]['emissions']
+                flat_emission = flat_emissions[flat_classifier][nb_image]['emissions']
+
+                diff_f1 = hi_f1 - flat_f1
+                diff_emission = hi_emission - flat_emission
+
+                diff_f1_scores.append(diff_f1)
+                diff_emissions.append(diff_emission)
+                labels.append(nb_image)
+
+            plt.scatter(diff_f1_scores, diff_emissions,
+                        label=f'{hi_classifier}', color=color,
+                        marker=marker, s=100, edgecolors='black')
+
+            for x, y, num_image in zip(diff_f1_scores, diff_emissions, labels):
+                plt.text(x, y, f'{num_image}', fontsize=12, color='black')
+
+    # Labels et mise en forme
+    plt.xlabel('Différence de F1-score (Hiérarchique - Flat)', fontsize=36)
+    plt.ylabel("Différence d'émissions de carbone(Hiérarchique - Flat)", fontsize=36)
+    plt.legend(fontsize=20)
+    plt.grid(True)
+    plt.xticks(fontsize=32)
+    plt.yticks(fontsize=32)
+
+    plt.tight_layout()
+    plt.savefig('diff_f1_vs_diff_emissions.png')
+    plt.show()
+
+
+def plot_emissions(flat_emissions, hi_emissions, emission_per_patch):
+    nb_images = sorted(set(n for d in (flat_emissions, hi_emissions) for c in d for n in d[c]))
+    flat_classifiers = list(flat_emissions.keys())  # Récupère les noms des classificateurs
+    hi_classifiers = list(hi_emissions.keys())
+    x = np.arange(len(nb_images))  # Indices pour l'axe X
+    width = 0.35  # Largeur des barres
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    scalefactor = 1e6  # Pour convertir en mg CO₂eq
+
+    for i, (flat_classifier, hi_classifier) in enumerate(zip(flat_classifiers, hi_classifiers)):
+        # Calcul des émissions pour chaque classifieur
+        flat_vals = [flat_emissions.get(flat_classifier, {}).get(n, {}).get('emissions', 0) * scalefactor for n in nb_images]
+        hi_vals = [hi_emissions.get(hi_classifier, {}).get(n, {}).get('emissions', 0) * scalefactor for n in nb_images]
+
+        # Émissions dues à l'extraction des patches (toujours en bas)
+        extraction_vals = [n * emission_per_patch * scalefactor for n in nb_images]
+
+        # Barres de l'extraction (fondation de la barre)
+        ax.bar(x - width / 2 + i * width, extraction_vals, width, label=f'Extraction' if i == 0 else "", color='cornflowerblue', alpha=0.6)
+        ax.bar(x + width / 2 + i * width, extraction_vals, width, label=f'Extraction' if i == 0 else "", color='navajowhite', alpha=0.6)
+
+        # Barres du training (empilées au-dessus)
+        ax.bar(x - width / 2 + i * width, flat_vals, width, bottom=extraction_vals, label=f'Training Flat Classifier', color='royalblue')
+        ax.bar(x + width / 2 + i * width, hi_vals, width, bottom=extraction_vals, label=f'Training Hierarchical Classifier', color='orange')
+
+    ax.set_xlabel('Patches number for training')
+    ax.set_ylabel('Carbon emissions (mg CO₂eq)')
+    ax.set_xticks(x)
+    ax.set_xticklabels(nb_images)
+    ax.set_title('Carbon emission for extraction and training for hierarchical and flat classifiers')
+    ax.legend()
+
+    plt.show()
 
 
 def plot_intermediate_metrics(flat_intermediate_reports, hi_intermediate_reports):

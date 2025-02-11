@@ -144,3 +144,21 @@ def calculate_means_emissions(flat_emissions_run_reports, classifier_name, nb_im
     flat_emissions_reports[classifier_name][nb_image] = means_emissions
 
     return flat_emissions_reports
+
+
+def eq_patch_emission_extraction(extract_features, nb_total_patches):
+    emission_per_patch = extract_features['emissions']/nb_total_patches
+    return emission_per_patch
+
+def nb_total_patches(dataset, folder_images):
+    image_extensions = ('.jpg', '.png')
+    count = 0
+    for root, _, files in os.walk(folder_images):
+        count += sum(1 for file in files if file.lower().endswith(image_extensions))
+    if dataset == 'RIO':
+        count=count*25
+    elif dataset == 'MLC':
+        count=count*200
+    elif dataset == 'TasCPC':
+        count=count*50
+    return count
